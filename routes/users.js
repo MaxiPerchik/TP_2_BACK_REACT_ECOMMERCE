@@ -1,9 +1,11 @@
-var express = require('express');
-var router = express.Router();
+import { Router } from "express";
+const router = Router();
+import { getAllUsers } from "../controllers/users.js";
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get("/", async function (req, res, next) {
+  console.log("usuarios");
+  res.json(await getAllUsers());
 });
 
-module.exports = router;
+export default router;
