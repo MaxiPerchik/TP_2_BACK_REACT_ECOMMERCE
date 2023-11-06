@@ -1,7 +1,15 @@
-import { getUsers } from "../data/users.js";
+import users from "../data/users.js";
 
 async function getAllUsers() {
-  return getUsers();
+  return users.getUsers();
 }
 
-export { getAllUsers };
+async function addUser(user) {
+  return users.addUser(user);
+}
+
+async function findByCredentials(email, password) {
+  return users.findByCredentials(email, password);
+}
+
+export default { getAllUsers, addUser, findByCredentials };
