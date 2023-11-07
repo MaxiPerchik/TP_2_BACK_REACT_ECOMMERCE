@@ -1,7 +1,11 @@
 import { getConnection } from "./conn.js";
-
+import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
+
+dotenv.config();
+const CLAVE_SECRETA = process.env.CLAVE_SECRETA;
 
 async function getUsers() {
   const connectiondb = await getConnection();
@@ -22,17 +26,36 @@ async function findByCredentials(email, password) {
 
   const user = await connection.db("sample_mflix").collection("users").findOne({ email: email });
 
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-    throw new Error("Password no corresponde a usuario");
-  }
   return user;
 }
 
-function generateAuthToken(user){
-  const token = Jwt.sign({_id: user._id, email: user.email, username: user.username}, "clavesecreta");
+function generateAuthToken(user) {
+  const token = Jwt.sign(
+    { _id: user._id, email: user.email, username: user.username },
+    'CLAVE_SECRETA',
+    { expiresIn: "1h" }
+  );
   return token;
 }
 
-export default { getUsers, addUser, findByCredentials, generateAuthToken};
+async function updateUser(id, name) {
+  try {
+    const connection = await getConnection();
+
+    const result = await connection
+      .db("sample_mflix")
+      .collection("users")
+      .updateOne({ _id: new ObjectId(id) }, { $set: { name: name } });
+
+    console.log(result);
+    if (result.modifiedCount === 1) {
+      return { message: "User updated successfully" };
+    } else {
+      return { message: "User not found or no changes made" };
+    }
+  } catch (error) {
+    return { message: "Update failed", error: error.message };
+  }
+}
+
+export default { getUsers, addUser, findByCredentials, generateAuthToken, updateUser };
