@@ -30,4 +30,9 @@ async function findByCredentials(email, password) {
   return user;
 }
 
-export default { getUsers, addUser, findByCredentials };
+function generateAuthToken(user){
+  const token = Jwt.sign({_id: user._id, email: user.email, username: user.username}, "clavesecreta");
+  return token;
+}
+
+export default { getUsers, addUser, findByCredentials, generateAuthToken};

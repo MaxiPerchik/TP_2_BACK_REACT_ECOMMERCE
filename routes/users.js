@@ -15,13 +15,16 @@ router.post("/register", async function (req, res, next) {
 
 router.post("/login", async (req, res) => {
   try {
-    const user = await userController.findByCredentials(
-      req.body.email,
-      req.body.password
-    );
-    res.send(user);
+    const email = req.body.email;
+    const passowrd = req.body.password;
+
+    const token = await userController.login(email, passowrd);
+
+    req.session.token = token;
+
+    res.json({ message: "Authentication successful", token });
   } catch (error) {
-    res.status(401).send("Autenticación fallida");
+    res.status(401).send("Autenticación fallida " + error.message);
   }
 });
 

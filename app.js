@@ -3,6 +3,7 @@ import express, { json, urlencoded } from "express";
 import { join } from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import session from "express-session";
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
@@ -17,6 +18,13 @@ app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+  session({
+    secret: 'yourSecretKey', // Change this to a secure secret key
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 //app.use(static(join(__dirname, "public")));
 
 app.use("/", indexRouter);
