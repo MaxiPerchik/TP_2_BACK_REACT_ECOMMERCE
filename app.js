@@ -6,6 +6,7 @@ import session from "express-session";
 import createError from "http-errors";
 import { join } from "path";
 import dotenv from "dotenv";
+import cors from "cors";
 dotenv.config();
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 
 // Configuración de rutas
 import indexRouter from "./routes/index.js";
@@ -32,7 +34,6 @@ import usersRouter from "./routes/users.js";
 
 app.use("/", indexRouter);
 app.use("/api/users", usersRouter);
-
 
 // error handler
 app.use(function (err, req, res, next) {
