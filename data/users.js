@@ -5,7 +5,7 @@ import Jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 
 dotenv.config();
-const CLAVE_SECRETA = process.env.CLAVE_SECRETA;
+const CLAVE_JWT = process.env.CLAVE_JWT;
 
 async function getUsers() {
   const connectiondb = await getConnection();
@@ -30,11 +30,10 @@ async function findByCredentials(email, password) {
 }
 
 function generateAuthToken(user) {
-  const token = Jwt.sign(
-    { _id: user._id, email: user.email, username: user.username },
-    'CLAVE_SECRETA',
-    { expiresIn: "1h" }
-  );
+  // si quitamos la exiracion tenemos que usar el token en cada operacion.
+  const token = Jwt.sign({ _id: user._id, email: user.email, username: user.username }, CLAVE_JWT, {
+    expiresIn: "1h",
+  });
   return token;
 }
 
@@ -47,15 +46,16 @@ async function updateUser(id, name) {
       .collection("users")
       .updateOne({ _id: new ObjectId(id) }, { $set: { name: name } });
 
-    console.log(result);
-    if (result.modifiedCount === 1) {
-      return { message: "User updated successfully" };
-    } else {
-      return { message: "User not found or no changes made" };
-    }
+    return result;
   } catch (error) {
-    return { message: "Update failed", error: error.message };
+    return "Update failed: " + error.message;
   }
 }
 
-export default { getUsers, addUser, findByCredentials, generateAuthToken, updateUser };
+async function destroy(user) {
+  const connection = await getConnection();
+  const result = await connection.db("sample_mflix").collection("users").deleteOne(user);
+  console.log(result)
+  return result;
+}
+export default { getUsers, addUser, findByCredentials, generateAuthToken, updateUser, destroy};

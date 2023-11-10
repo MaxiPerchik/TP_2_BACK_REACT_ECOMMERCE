@@ -1,39 +1,38 @@
-import createError from "http-errors";
-import express, { json, urlencoded } from "express";
-import { join } from "path";
+import express from "express";
+import { json, urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import session from "express-session";
-
-import indexRouter from "./routes/index.js";
-import usersRouter from "./routes/users.js";
+import createError from "http-errors";
+import { join } from "path";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
-// view engine setup
-//app.set("views", join(__dirname, "views"));
 app.set("view engine", "pug");
+
+// Configuración de sesión
+app.use(
+  session({
+    secret: process.env.CLAVE_JWT, // Cambia esto a una clave secreta segura
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(
-  session({
-    secret: 'yourSecretKey', // Change this to a secure secret key
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-//app.use(static(join(__dirname, "public")));
+
+// Configuración de rutas
+import indexRouter from "./routes/index.js";
+import usersRouter from "./routes/users.js";
 
 app.use("/", indexRouter);
 app.use("/api/users", usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
 
 // error handler
 app.use(function (err, req, res, next) {

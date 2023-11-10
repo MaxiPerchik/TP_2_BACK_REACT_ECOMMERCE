@@ -5,7 +5,7 @@ import Jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
-const CLAVE_SECRETA = process.env.CLAVE_SECRETA;
+const CLAVE_JWT = process.env.CLAVE_JWT;
 
 /* GET users listing. */
 router.get("/", async function (req, res, next) {
@@ -33,25 +33,28 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.put("/update-user", (req, res) => {
-   // chequea que el token este en la session
+router.put("/update-user", async (req, res) => {
+  // chequea que el token este en la session
   if (!req.session.token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+
   try {
     // verifica que sea el token correcto
-    const decoded = Jwt.verify(req.session.token, 'CLAVE_SECRETA');
-    
-    // se puede acceder al id del user con el token
-    const userId = decoded._id;
-    
-    // habria que ver de validar la info de alguna manera
-    userController.updateUser(userId, req.body.name);
+    const decoded = Jwt.verify(req.session.token, CLAVE_JWT);
 
-    res.json({ message: "User updated successfully " + req.body.name });
+    res.json(await userController.updateUser(decoded._id, req.body.name)); // Envía el mensaje de respuesta
   } catch (error) {
-    console.error(error);
-    res.status(401).json({ message: "Unauthorized" });
+    res.json({ message: error.message });
+  }
+});
+
+router.delete("/delete", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    res.json(await userController.destroy(email, password)); // Envía el mensaje de respuesta
+  } catch (error) {
+    res.json({ message: error.message });
   }
 });
 
