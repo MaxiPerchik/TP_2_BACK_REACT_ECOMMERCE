@@ -14,6 +14,7 @@ router.get("/", async function (req, res, next) {
 
 router.post("/register", async function (req, res, next) {
   const newUser = req.body;
+  console.log("de la ruta", newUser);
   const result = await userController.addUser(newUser);
   res.send(result);
 });
