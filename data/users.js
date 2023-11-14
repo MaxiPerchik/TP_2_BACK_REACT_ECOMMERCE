@@ -19,21 +19,22 @@ async function getUsers() {
 }
 
 async function addUser(user) {
-  console.log("del data", user);
-  user.password = await bcrypt.hash(user.password, 8);
-  const connection = await getConnection();
-  console.log("despues de la conexion", user);
-  const result = await connection
-    .db("sample_mflix")
-    .collection("users")
-    .insertOne(user);
-  console.log(result);
+  try {
+    user.password = await bcrypt.hash(user.password, 8);
+    const connection = await getConnection();
+    const result = await connection
+      .db("sample_mflix")
+      .collection("users")
+      .insertOne(user);
 
-  if (result.acknowledged == true) {
-    return true;
+    return result;
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new Error("El correo electrónico ya está registrado");
+    } else {
+      throw new Error("Error al registrar el usuario");
+    }
   }
-
-  return result;
 }
 
 async function findByCredentials(email, password) {

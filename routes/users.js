@@ -1,6 +1,7 @@
 import { Router } from "express";
 const router = Router();
 import userController from "../controllers/users.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 import Jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
@@ -8,15 +9,22 @@ dotenv.config();
 const CLAVE_JWT = process.env.CLAVE_JWT;
 
 /* GET users listing. */
-router.get("/", async function (req, res, next) {
-  res.json(await userController.getAllUsers());
+router.get("/", authMiddleware, async function (req, res, next) {
+  try {
+    res.json(await userController.getAllUsers());
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
 router.post("/register", async function (req, res, next) {
-  const newUser = req.body;
-  console.log("de la ruta", newUser);
-  const result = await userController.addUser(newUser);
-  res.send(result);
+  try {
+    const newUser = req.body;
+    const result = await userController.addUser(newUser);
+    res.status(201).json({ success: true, result });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
 });
 
 router.post("/login", async (req, res) => {
