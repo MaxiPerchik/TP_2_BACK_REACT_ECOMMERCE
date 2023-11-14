@@ -15,11 +15,21 @@ async function getUsers() {
 }
 
 async function addUser(user) {
-  user.password = await bcrypt.hash(user.password, 8);
-  const connection = await getConnection();
-  const result = await connection.db("sample_mflix").collection("users").insertOne(user);
-  return result;
+  try {
+    user.password = await bcrypt.hash(user.password, 8);
+    const connection = await getConnection();
+    const result = await connection.db("sample_mflix").collection("users").insertOne(user);
+
+    return result;
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new Error("El correo electrónico ya está registrado");
+    } else {
+      throw new Error("Error al registrar el usuario");
+    }
+  }
 }
+
 
 async function findByCredentials(email, password) {
   const connection = await getConnection();
@@ -55,7 +65,7 @@ async function updateUser(id, name) {
 async function destroy(user) {
   const connection = await getConnection();
   const result = await connection.db("sample_mflix").collection("users").deleteOne(user);
-  console.log(result)
+  console.log(result);
   return result;
 }
-export default { getUsers, addUser, findByCredentials, generateAuthToken, updateUser, destroy};
+export default { getUsers, addUser, findByCredentials, generateAuthToken, updateUser, destroy };

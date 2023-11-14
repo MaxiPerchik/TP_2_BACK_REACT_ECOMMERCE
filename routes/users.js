@@ -13,9 +13,13 @@ router.get("/", async function (req, res, next) {
 });
 
 router.post("/register", async function (req, res, next) {
+  try {
   const newUser = req.body;
   const result = await userController.addUser(newUser);
-  res.send(result);
+  res.status(201).json({ success: true, result });
+  }catch(error){
+    res.status(400).json({ success: false, error: error.message });
+  }
 });
 
 router.post("/login", async (req, res) => {
