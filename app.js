@@ -31,9 +31,11 @@ app.use(cors());
 // Configuración de rutas
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
+import productRouter from "./routes/productos.js";
 
 app.use("/", indexRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/products", productRouter);
 
 // error handler
 app.use(function (err, req, res, next) {

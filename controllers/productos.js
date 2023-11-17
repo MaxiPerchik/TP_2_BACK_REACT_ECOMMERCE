@@ -1,15 +1,17 @@
-import { GetAllProducts } from "../data/productos";
-import { updatePrice} from "../data/productos";
+import productos from "../data/productos.js";
 
-async function GetProductosPorNombre(nombre){
-    return GetProductosByName(nombre);
+async function GetProductosPorNombre(nombre) {
+  return productos.getProductosByName(nombre);
 }
-async function getAllProducts(){
-    return GetAllProducts();
-}
-async function updatePrecio(id,valor){
-    return updatePrice(id,valor);
+async function getAllProducts() {
+  return productos.getAllProducts();
 }
 
+async function updatePrecio(id, valor) {
+  return productos.updatePrice(id, valor);
+}
 
-export {GetProductosPorNombre,getAllProducts,updatePrecio}
+async function addProducts(products) {
+  return productos.addProducts(products);
+}
+export default { GetProductosPorNombre, getAllProducts, updatePrecio, addProducts };
