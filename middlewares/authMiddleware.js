@@ -7,7 +7,7 @@ const authMiddleware = (req, res, next) => {
   
     // Verificar si hay un token
     if (!token) {
-      return res.status(401).json({ error: 'Acceso no autorizado. No se proporcionó un token.' });
+      return res.status(401).json({ error: 'Acceso no autorizado. Usuario no se encuentra Logeado.' });
     }
   
     try {
