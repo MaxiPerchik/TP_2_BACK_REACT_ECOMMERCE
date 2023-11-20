@@ -3,9 +3,22 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
+import { Schema, model } from "mongoose";
 
 dotenv.config();
 const CLAVE_JWT = process.env.CLAVE_JWT;
+
+const userSchema = new Schema({
+  nombre: { type: String, required: true },
+  apellido: { type: String, required: true },
+  telefono: { type: String },
+  email: { type: String, required: true, unique: true },
+  emailConfirmacion: { type: String },
+  password: { type: String, required: true },
+  role: { type: String, enum: ["regular", "admin"], default: "regular" },
+});
+
+const User = model("User", userSchema);
 
 async function getUsers() {
   const connectiondb = await getConnection();
@@ -21,7 +34,12 @@ async function getUsers() {
 async function addUser(user) {
   try {
     user.password = await bcrypt.hash(user.password, 8);
+    user.role = user.role || "regular";
     const connection = await getConnection();
+
+    if (user.email === "admin@gmail.com") {
+      user.role = "admin";
+    }
     const result = await connection
       .db("sample_mflix")
       .collection("users")
@@ -85,6 +103,7 @@ async function destroy(user) {
   return result;
 }
 export default {
+  User,
   getUsers,
   addUser,
   findByCredentials,
