@@ -10,14 +10,14 @@ const CLAVE_JWT = process.env.CLAVE_JWT;
 
 /* GET users listing. */
 router.get("/", authMiddleware, async function (req, res, next) {
+  console.log("holas");
   try {
+    console.log(req.user.role);
     // Verificar si el usuario es un administrador
     if (req.user.role !== "admin") {
-      return res
-        .status(403)
-        .json({
-          error: "Acceso no autorizado. Se requiere rol de administrador.",
-        });
+      return res.status(403).json({
+        error: "Acceso no autorizado. Se requiere rol de administrador.",
+      });
     }
 
     res.json(await userController.getAllUsers());

@@ -37,6 +37,8 @@ async function addUser(user) {
     user.role = user.role || "regular";
     const connection = await getConnection();
 
+    console.log(user);
+
     if (user.email === "admin@gmail.com") {
       user.role = "admin";
     }
@@ -67,12 +69,13 @@ async function findByCredentials(email, password) {
 }
 
 function generateAuthToken(user) {
+  console.log("en", generateAuthToken);
   // si quitamos la exiracion tenemos que usar el token en cada operacion.
   const token = Jwt.sign(
-    { _id: user._id, email: user.email, username: user.username },
+    { _id: user._id, email: user.email, username: user.username, user: user },
     CLAVE_JWT,
     {
-      expiresIn: "1h",
+      expiresIn: "10h",
     }
   );
   return token;

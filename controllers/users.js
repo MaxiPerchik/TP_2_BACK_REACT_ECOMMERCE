@@ -23,7 +23,8 @@ async function login(email, password) {
   }
 
   const token = users.generateAuthToken(user);
-  return { token, role: user.role };
+  console.log(token);
+  return token;
 }
 
 async function updateUser(id, name) {
