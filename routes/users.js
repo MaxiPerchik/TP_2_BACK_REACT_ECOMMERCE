@@ -10,7 +10,6 @@ const CLAVE_JWT = process.env.CLAVE_JWT;
 
 /* GET users listing. */
 router.get("/", authMiddleware, async function (req, res, next) {
-  console.log("holas");
   try {
     console.log(req.user.role);
     // Verificar si el usuario es un administrador

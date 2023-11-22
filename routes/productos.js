@@ -1,20 +1,36 @@
 import { Router } from "express";
 const router = Router();
 import productosController from "../controllers/productos.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
-router.get("/", async function (req, res) {
-  res.json(await productosController.getAllProducts());
+/* GET users listing. */
+router.get("/", authMiddleware, async function (req, res, next) {
+  try {
+    // Verificar si el usuario es un administrador
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        error: "Acceso no autorizado. Se requiere rol de administrador.",
+      });
+    }
+
+    res.json(await productosController.getAllProducts());
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
+
 router.get("/searchNombre/:nombre", async function (req, res) {
-  console.log("buscando");
+  // no hace falta bueno saberlo 
+  // const nombreSinEspacios = req.params.nombre.replace(/%20/g, " ");
+  
   res.json(await productosController.GetProductosPorNombre(req.params.nombre));
 });
 
 router.put("/update/:_id", async function (req, res) {
     console.log(req.params._id)
   try {
-    const _id = req.params._id;
+    const _id = req.params._id; 
     const price = req.body.price;
     res.json(await productosController.updatePrecio(_id, price));
   } catch (error) {

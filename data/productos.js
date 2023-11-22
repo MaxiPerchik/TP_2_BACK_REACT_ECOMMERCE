@@ -15,8 +15,7 @@ async function getProductosByName(name) {
   const products = await connectiondb
     .db(database)
     .collection(collection)
-    .find({ name: name })
-    .toArray();
+    .findOne({ productName: name })
   return products;
 }
 
@@ -32,7 +31,7 @@ async function updatePrice(idProducto, valor) {
     const result = await connectiondb
       .db(database)
       .collection(collection)
-      .updateOne({ _id: new ObjectId(idProducto) }, { $set: { price: valor } });
+      .updateOne({ _id: new ObjectId(idProducto) }, { $set: { productPrice: valor } });
   } catch (error) {
     return "update failed " + error.message;
   }
